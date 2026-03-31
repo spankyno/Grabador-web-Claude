@@ -6,10 +6,6 @@
 
 "use client";
 
-// Forzar rendering dinámico — en build time no hay variables de entorno
-// de Supabase disponibles, lo que causa el error de prerender.
-export const dynamic = "force-dynamic";
-
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,7 +15,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
+  // NO inicializar createClient() en el cuerpo del componente:
+  // se ejecutaría durante el prerender del servidor donde las
+  // variables de entorno NEXT_PUBLIC_* aún no están disponibles.
+  // Se llama dentro de cada handler, que solo corre en el browser.
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +26,7 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -43,6 +43,7 @@ export default function LoginPage() {
   };
 
   const handleOAuth = async (provider: "google" | "github") => {
+    const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
