@@ -1,13 +1,20 @@
 // =============================================
 // src/app/layout.tsx
-// Layout raíz de Next.js — fuentes, metadata global
+// Fuentes: Syne (display) + JetBrains Mono (código)
 // =============================================
 
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono } from "next/font/google";
+import { Syne, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const ibmPlexMono = IBM_Plex_Mono({
+const syne = Syne({
+  weight: ["400", "600", "700", "800"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-syne",
+});
+
+const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -16,26 +23,22 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Grabador Web",
-    template: "%s | Grabador Web",
+    default: "GrabadorWeb",
+    template: "%s | GrabadorWeb",
   },
-  description: "Graba tu pantalla directamente desde el navegador. Sin instalaciones.",
-  keywords: ["grabación de pantalla", "screen recorder", "webm", "navegador"],
+  description: "Herramienta profesional de grabación de pantalla desde el navegador.",
+  keywords: ["grabación de pantalla", "screen recorder", "webm", "supabase", "ffmpeg"],
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#080b12",
+  themeColor: "#06080e",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={ibmPlexMono.variable}>
+    <html lang="es" className={`${syne.variable} ${jetbrainsMono.variable}`}>
       <body>{children}</body>
     </html>
   );
