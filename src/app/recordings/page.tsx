@@ -6,6 +6,9 @@
 
 "use client";
 
+// Forzar rendering dinámico — requiere autenticación en runtime
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState, useCallback } from "react";
 import type { Recording } from "@/types";
 

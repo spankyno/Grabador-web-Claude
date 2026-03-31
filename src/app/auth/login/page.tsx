@@ -6,6 +6,10 @@
 
 "use client";
 
+// Forzar rendering dinámico — en build time no hay variables de entorno
+// de Supabase disponibles, lo que causa el error de prerender.
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 

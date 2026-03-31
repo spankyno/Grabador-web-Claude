@@ -9,6 +9,10 @@
 import type { Metadata } from "next";
 import RecorderLoader from "@/components/recorder/RecorderLoader";
 
+// Forzar rendering dinámico — RecorderLoader inicializa Supabase en cliente,
+// lo que falla si Next.js intenta prerenderizar en build time.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Grabador Web — Graba tu pantalla directamente desde el navegador",
   description:
