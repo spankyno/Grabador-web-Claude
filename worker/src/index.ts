@@ -209,29 +209,26 @@ async function processVideo(job: ProcessingJob): Promise<void> {
 
 // =============================================
 // FFmpeg: Conversión WebM → MP4
-// Optimizado para bajo consumo de RAM (Railway free tier: 512MB)
+// superfast: mejor compresión que ultrafast, RAM similar.
+// CRF 32 + mono audio = archivos pequeños para contenido de pantalla.
 // =============================================
 function convertToMp4(inputPath: string, outputPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
       .videoCodec("libx264")
       .outputOptions([
-        // ultrafast usa mucho menos RAM que fast/medium
-        // a costa de archivos algo más grandes
-        "-preset ultrafast",
-        "-crf 28",
+        "-preset superfast",
+        "-crf 32",
         "-movflags +faststart",
-        "-profile:v baseline",  // baseline usa menos memoria que main
+        "-profile:v baseline",
         "-level 3.1",
         "-pix_fmt yuv420p",
-        // Limitar threads para reducir uso de RAM
         "-threads 1",
-        // Reducir resolución si es mayor a 1280x720 (menos RAM en decode)
         "-vf scale='min(1280,iw)':'min(720,ih)':force_original_aspect_ratio=decrease",
       ])
       .audioCodec("aac")
-      .audioBitrate("96k")   // reducido de 128k
-      .audioChannels(2)
+      .audioBitrate("64k")
+      .audioChannels(1)  // mono — el audio de pantalla no necesita stereo
       .format("mp4")
       .on("start", (cmd) => {
         console.log(`[FFmpeg] Comando: ${cmd.substring(0, 120)}...`);
