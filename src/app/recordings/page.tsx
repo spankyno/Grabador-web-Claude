@@ -30,9 +30,9 @@ function formatDate(iso: string): string {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  raw:        { label: "Subido",       color: "#f59e0b" },
-  processing: { label: "Procesando…",  color: "#818cf8" },
-  ready:      { label: "Listo",        color: "#10b981" },
+  raw:        { label: "Subido",       color: "var(--accent)" },
+  processing: { label: "Procesando…",  color: "var(--accent)" },
+  ready:      { label: "Listo",        color: "var(--green, #34d399)" },
   error:      { label: "Error",        color: "#f87171" },
 };
 
@@ -235,7 +235,7 @@ export default function RecordingsPage() {
           max-width: 960px;
           margin: 0 auto;
           padding: 2rem 1rem;
-          font-family: 'IBM Plex Mono', monospace;
+          font-family: 'DM Sans', sans-serif;
           color: #f1f5f9;
         }
         .page-header {
@@ -375,13 +375,13 @@ export default function RecordingsPage() {
           font-size: 0.82rem;
           font-weight: 600;
           font-family: inherit;
-          background: rgba(245, 158, 11, 0.1);
-          color: #f59e0b;
+          background: rgba(124,106,247,0.12);
+          color: var(--accent);
           border: 1.5px solid rgba(245, 158, 11, 0.3);
           cursor: pointer;
           transition: all 0.15s;
         }
-        .btn-retry:hover:not(:disabled) { background: rgba(245,158,11,0.18); border-color: #f59e0b; }
+        .btn-retry:hover:not(:disabled) { background: rgba(124,106,247,0.2); border-color: var(--accent); }
         .btn-retry:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-retry.sm { padding: 0.4rem 0.75rem; font-size: 0.78rem; }
         .btn-delete {

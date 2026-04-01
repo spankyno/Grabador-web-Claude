@@ -46,7 +46,7 @@ export default function Navbar() {
         <span className="nav-logo-icon">
           <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
             <circle cx="11" cy="11" r="10" stroke="currentColor" strokeWidth="1.5"/>
-            <circle cx="11" cy="11" r="4.5" fill="var(--amber)"/>
+            <circle cx="11" cy="11" r="4.5" fill="var(--accent)"/>
           </svg>
         </span>
         <span className="nav-logo-text">GrabadorWeb</span>
@@ -121,9 +121,9 @@ export default function Navbar() {
           text-decoration: none;
           color: var(--text-primary, #f1f5f9);
         }
-        .nav-logo-icon { color: var(--amber, #f59e0b); display: flex; }
+        .nav-logo-icon { color: var(--accent); display: flex; }
         .nav-logo-text {
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, 'DM Sans', sans-serif);
           font-size: 1.05rem;
           font-weight: 700;
           letter-spacing: -0.02em;
@@ -141,7 +141,7 @@ export default function Navbar() {
           border-radius: 8px;
           font-size: 0.85rem;
           font-weight: 600;
-          font-family: var(--font-mono, monospace);
+          font-family: var(--font-mono, 'DM Mono', monospace);
           text-decoration: none;
           transition: all 0.15s;
           cursor: pointer;
@@ -155,21 +155,21 @@ export default function Navbar() {
         }
         .nav-btn-ghost:hover { color: #f1f5f9; background: rgba(255,255,255,0.05); }
         .nav-btn-primary {
-          background: var(--amber, #f59e0b);
+          background: var(--accent);
           color: #000;
         }
-        .nav-btn-primary:hover { background: #fbbf24; transform: translateY(-1px); }
+        .nav-btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); }
 
         /* Avatar */
         .nav-avatar-wrap { position: relative; }
         .nav-avatar {
           width: 34px; height: 34px;
           border-radius: 50%;
-          background: var(--amber, #f59e0b);
+          background: var(--accent);
           color: #000;
           font-size: 0.8rem;
           font-weight: 700;
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, 'DM Sans', sans-serif);
           border: none;
           cursor: pointer;
           transition: transform 0.15s;
@@ -195,7 +195,7 @@ export default function Navbar() {
           font-size: 0.72rem;
           color: #6b7280;
           padding: 0.4rem 0.6rem;
-          font-family: var(--font-mono, monospace);
+          font-family: var(--font-mono, 'DM Mono', monospace);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -216,7 +216,7 @@ export default function Navbar() {
           background: none;
           border: none;
           cursor: pointer;
-          font-family: var(--font-mono, monospace);
+          font-family: var(--font-mono, 'DM Mono', monospace);
           text-align: left;
           transition: all 0.12s;
         }

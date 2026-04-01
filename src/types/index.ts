@@ -28,6 +28,15 @@ export interface RecorderState {
   downloadUrl: string | null;
 }
 
+export type RecordingQuality = "low" | "medium" | "high";
+
+// Presets de calidad → bitrates
+export const QUALITY_PRESETS: Record<RecordingQuality, { video: number; audio: number; label: string; desc: string }> = {
+  low:    { video: 400_000,   audio: 48_000,  label: "Baja",  desc: "~1 MB/min" },
+  medium: { video: 800_000,   audio: 64_000,  label: "Media", desc: "~2 MB/min" },
+  high:   { video: 2_000_000, audio: 128_000, label: "Alta",  desc: "~5 MB/min" },
+};
+
 // Opciones de grabación pasadas al hook
 export interface RecorderOptions {
   // Umbral en minutos para activar modo resumable con TUS
@@ -42,6 +51,10 @@ export interface RecorderOptions {
   includeMicrophone?: boolean;
   // Incluir cámara (picture-in-picture)
   includeCamera?: boolean;
+  // Calidad de grabación
+  quality?: RecordingQuality;
+  // Temporizador: detener automáticamente a los N segundos (0 = sin límite)
+  autoStopSeconds?: number;
 }
 
 // Registro en la tabla `recordings` de PostgreSQL

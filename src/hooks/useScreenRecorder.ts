@@ -37,6 +37,8 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
     includeSystemAudio = true,
     includeMicrophone = false,
     includeCamera = false,
+    quality = "medium",
+    autoStopSeconds = 0,
   } = options;
 
   const [state, setState] = useState<RecorderState>(initialState);
@@ -50,6 +52,7 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
   const startTimeRef = useRef<number>(0);
   const totalSizeBytesRef = useRef<number>(0);
   const tusUploadRef = useRef<import("tus-js-client").Upload | null>(null);
+  const autoStopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Limpia recursos al desmontar el componente
   useEffect(() => {
@@ -67,6 +70,10 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
+    }
+    if (autoStopTimerRef.current) {
+      clearTimeout(autoStopTimerRef.current);
+      autoStopTimerRef.current = null;
     }
   };
 
@@ -142,10 +149,9 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
       // 6. Crear el MediaRecorder con timeslice para generar chunks periódicos
       const mediaRecorder = new MediaRecorder(combinedStream, {
         mimeType,
-        // 800kbps es suficiente para pantalla (texto/UI con poca variación).
-        // Subir a 1_500_000 si grabas vídeo con mucho movimiento.
-        videoBitsPerSecond: 800_000,
-        audioBitsPerSecond: 64_000,
+        // Bitrates según preset de calidad seleccionado por el usuario
+        videoBitsPerSecond: QUALITY_PRESETS[quality].video,
+        audioBitsPerSecond: QUALITY_PRESETS[quality].audio,
       });
 
       // Acumular chunks y medir tamaño total
@@ -177,6 +183,14 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
       // 7. Iniciar con timeslice para generar chunks periódicos (libera RAM)
       mediaRecorder.start(timesliceMs);
       updateState({ status: "recording", recordingId: null });
+
+      // 7b. Temporizador automático de parada
+      if (autoStopSeconds > 0) {
+        autoStopTimerRef.current = setTimeout(() => {
+          console.log(`[Recorder] Tiempo límite alcanzado (${autoStopSeconds}s), deteniendo...`);
+          stopRecording();
+        }, autoStopSeconds * 1000);
+      }
 
       // 8. Timer para mostrar la duración en tiempo real
       timerRef.current = setInterval(() => {

@@ -71,7 +71,7 @@ export default function LoginPage() {
         .auth-back { font-size: 0.78rem; color: #4b5563; text-decoration: none; margin-bottom: 0.5rem; }
         .auth-back:hover { color: #94a3b8; }
         .auth-title {
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, 'DM Sans', sans-serif);
           font-size: 1.6rem; font-weight: 800;
           color: #f1f5f9; letter-spacing: -0.03em;
         }
@@ -81,10 +81,10 @@ export default function LoginPage() {
           padding: 0.7rem 1rem; border-radius: 9px;
           background: #06080e; border: 1px solid #1a2030;
           color: #f1f5f9; font-size: 0.9rem;
-          font-family: var(--font-mono, monospace); outline: none;
+          font-family: var(--font-sans, 'DM Sans', sans-serif); outline: none;
           transition: border-color 0.15s;
         }
-        .auth-input:focus { border-color: var(--amber, #f59e0b); }
+        .auth-input:focus { border-color: var(--accent); }
         .auth-input::placeholder { color: #2d3748; }
         .auth-error {
           font-size: 0.78rem; color: #f87171;
@@ -94,17 +94,17 @@ export default function LoginPage() {
         }
         .auth-submit {
           margin-top: 0.25rem; padding: 0.75rem;
-          border-radius: 9px; background: var(--amber, #f59e0b);
+          border-radius: 9px; background: var(--accent);
           color: #000; font-weight: 700; font-size: 0.95rem;
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, 'DM Sans', sans-serif);
           border: none; cursor: pointer;
           display: flex; align-items: center; justify-content: center;
           transition: background 0.15s, transform 0.15s;
         }
-        .auth-submit:hover:not(:disabled) { background: #fbbf24; transform: translateY(-1px); }
+        .auth-submit:hover:not(:disabled) { background: var(--accent-bright); transform: translateY(-1px); }
         .auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
         .auth-switch { font-size: 0.8rem; color: #6b7280; text-align: center; }
-        .auth-switch a { color: var(--amber, #f59e0b); text-decoration: none; }
+        .auth-switch a { color: var(--accent); text-decoration: none; }
         .spinner {
           width: 18px; height: 18px;
           border: 2px solid rgba(0,0,0,0.2); border-top-color: #000;

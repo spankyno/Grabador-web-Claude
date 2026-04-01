@@ -12,7 +12,7 @@ const FEATURES = [
     tag: "Frontend",
     title: "Grabación nativa en el navegador",
     desc: "Usa la API MediaRecorder con timeslice cada 20s para generar chunks y evitar picos de RAM. Soporta pantalla completa, ventanas o pestañas individuales.",
-    color: "#f59e0b",
+    color: "var(--accent)",
   },
   {
     icon: "⬡",
@@ -205,7 +205,7 @@ export default function LandingClient() {
         /* ---- Variables ---- */
         :root {
           --bg: #06080e;
-          --amber: #f59e0b;
+          --amber: var(--accent);
           --text-primary: #f1f5f9;
           --text-secondary: #94a3b8;
           --border: #1a2030;
@@ -244,7 +244,7 @@ export default function LandingClient() {
         .hero-glow {
           position: absolute; top: -200px; left: -200px;
           width: 600px; height: 600px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(245,158,11,0.07) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(124,106,247,0.07) 0%, transparent 70%);
           pointer-events: none; z-index: 0;
         }
 
@@ -253,21 +253,21 @@ export default function LandingClient() {
         .hero-badge {
           display: inline-flex; align-items: center; gap: 0.5rem;
           font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
-          text-transform: uppercase; color: var(--amber);
-          background: rgba(245,158,11,0.08);
-          border: 1px solid rgba(245,158,11,0.2);
+          text-transform: uppercase; color: var(--accent);
+          background: rgba(124,106,247,0.08);
+          border: 1px solid rgba(124,106,247,0.2);
           border-radius: 99px; padding: 0.3rem 0.85rem;
           margin-bottom: 1.5rem;
           animation: fadeUp 0.6s ease both;
         }
         .badge-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: var(--amber);
+          background: var(--accent);
           animation: pulse-dot 2s ease-in-out infinite;
         }
 
         .hero-title {
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, sans-serif);
           font-size: clamp(3rem, 6vw, 5.5rem);
           font-weight: 900; line-height: 0.95;
           letter-spacing: -0.04em; color: #fff;
@@ -275,7 +275,7 @@ export default function LandingClient() {
           animation: fadeUp 0.6s 0.1s ease both;
         }
         .hero-title-accent {
-          background: linear-gradient(135deg, var(--amber) 0%, #fb923c 100%);
+          background: linear-gradient(135deg, var(--accent) 0%, #fb923c 100%);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent;
           background-clip: text;
         }
@@ -294,16 +294,16 @@ export default function LandingClient() {
 
         .btn-cta-primary {
           padding: 0.8rem 2rem; border-radius: 10px;
-          background: var(--amber); color: #000;
+          background: var(--accent); color: #000;
           font-weight: 800; font-size: 0.95rem;
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, sans-serif);
           text-decoration: none; letter-spacing: -0.01em;
           transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
-          box-shadow: 0 4px 20px rgba(245,158,11,0.25);
+          box-shadow: 0 4px 20px rgba(124,106,247,0.25);
         }
         .btn-cta-primary:hover {
-          background: #fbbf24; transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(245,158,11,0.4);
+          background: var(--accent-bright); transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(124,106,247,0.4);
         }
 
         .btn-cta-ghost {
@@ -334,11 +334,11 @@ export default function LandingClient() {
         }
         .screen-frame {
           width: 100%; max-width: 420px;
-          background: #0a0d15;
+          background: var(--surface);
           border: 1px solid #1a2030;
           border-radius: 12px;
           overflow: hidden;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,158,11,0.08);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,106,247,0.08);
         }
         .screen-bar {
           display: flex; align-items: center; gap: 0.4rem;
@@ -349,7 +349,7 @@ export default function LandingClient() {
           width: 10px; height: 10px; border-radius: 50%; background: #1e2433;
         }
         .screen-bar span:nth-child(1) { background: #f87171; }
-        .screen-bar span:nth-child(2) { background: #fbbf24; }
+        .screen-bar span:nth-child(2) { background: var(--accent-bright); }
         .screen-bar span:nth-child(3) { background: #34d399; }
 
         .screen-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
@@ -376,7 +376,7 @@ export default function LandingClient() {
         }
         .screen-progress-fill {
           height: 100%; width: 68%; border-radius: 2px;
-          background: linear-gradient(90deg, var(--amber), #fb923c);
+          background: linear-gradient(90deg, var(--accent), #fb923c);
           animation: progress-grow 3s ease-in-out infinite alternate;
         }
         .screen-label {
@@ -395,10 +395,10 @@ export default function LandingClient() {
         .section-tag {
           display: inline-block; font-size: 0.7rem; font-weight: 700;
           letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--amber); margin-bottom: 0.75rem;
+          color: var(--accent); margin-bottom: 0.75rem;
         }
         .section-title {
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, sans-serif);
           font-size: clamp(1.8rem, 3.5vw, 2.5rem);
           font-weight: 800; letter-spacing: -0.03em;
           color: #fff; margin-bottom: 0.75rem;
@@ -446,7 +446,7 @@ export default function LandingClient() {
           text-transform: uppercase; color: #4b5563;
         }
         .card-title {
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, sans-serif);
           font-size: 1rem; font-weight: 700;
           color: #e2e8f0; letter-spacing: -0.01em; margin: 0;
         }
@@ -466,18 +466,18 @@ export default function LandingClient() {
           background: var(--surface);
           border: 1px solid var(--border);
           border-radius: 20px;
-          box-shadow: 0 0 80px rgba(245,158,11,0.06);
+          box-shadow: 0 0 80px rgba(124,106,247,0.06);
           position: relative; overflow: hidden;
         }
         .cta-box::before {
           content: ''; position: absolute;
           top: -100px; left: 50%; transform: translateX(-50%);
           width: 300px; height: 300px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(245,158,11,0.08), transparent 70%);
+          background: radial-gradient(circle, rgba(124,106,247,0.08), transparent 70%);
           pointer-events: none;
         }
         .cta-title {
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, sans-serif);
           font-size: 2rem; font-weight: 800;
           color: #fff; letter-spacing: -0.03em; margin-bottom: 0.6rem;
         }
@@ -498,9 +498,9 @@ export default function LandingClient() {
         }
         .footer-brand { display: flex; flex-direction: column; gap: 0.4rem; }
         .footer-logo {
-          font-family: var(--font-syne, sans-serif);
+          font-family: var(--font-sans, sans-serif);
           font-size: 1.1rem; font-weight: 800;
-          color: var(--amber); letter-spacing: -0.02em;
+          color: var(--accent); letter-spacing: -0.02em;
         }
         .footer-copy { font-size: 0.75rem; color: #374151; }
 
@@ -517,7 +517,7 @@ export default function LandingClient() {
           font-size: 0.82rem; color: #6b7280; text-decoration: none;
           transition: color 0.15s;
         }
-        .footer-link:hover { color: var(--amber); }
+        .footer-link:hover { color: var(--accent); }
 
         /* ===== ANIMATIONS ===== */
         @keyframes fadeUp {
