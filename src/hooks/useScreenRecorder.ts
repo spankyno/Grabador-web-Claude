@@ -142,9 +142,10 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
       // 6. Crear el MediaRecorder con timeslice para generar chunks periódicos
       const mediaRecorder = new MediaRecorder(combinedStream, {
         mimeType,
-        // Bitrate razonable para grabaciones de pantalla: ~2.5Mbps vídeo
-        videoBitsPerSecond: 2_500_000,
-        audioBitsPerSecond: 128_000,
+        // 800kbps es suficiente para pantalla (texto/UI con poca variación).
+        // Subir a 1_500_000 si grabas vídeo con mucho movimiento.
+        videoBitsPerSecond: 800_000,
+        audioBitsPerSecond: 64_000,
       });
 
       // Acumular chunks y medir tamaño total
