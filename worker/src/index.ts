@@ -25,11 +25,19 @@ import type { ProcessingJob } from "./types";
 // Configurar FFmpeg con el binario estático incluido en el paquete
 if (ffmpegStatic) ffmpeg.setFfmpegPath(ffmpegStatic);
 
-// Cliente Supabase con service role (el worker tiene acceso total)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// NO crear el cliente Supabase a nivel de módulo — si las variables
+// de entorno no están disponibles al arrancar, el proceso crashea.
+// Se crea lazy dentro de cada función que lo necesita.
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error(
+      `Variables de entorno faltantes: ${!url ? "NEXT_PUBLIC_SUPABASE_URL" : ""} ${!key ? "SUPABASE_SERVICE_ROLE_KEY" : ""}`.trim()
+    );
+  }
+  return createClient(url, key);
+}
 
 const app = express();
 app.use(express.json());
@@ -62,6 +70,7 @@ app.post("/process", async (req, res) => {
 async function processVideo(job: ProcessingJob): Promise<void> {
   const { recording_id, raw_path, user_id } = job;
   const tmpDir = join(tmpdir(), `rec-${recording_id}`);
+  const supabase = getSupabase();
 
   try {
     await fs.mkdir(tmpDir, { recursive: true });
@@ -302,4 +311,12 @@ const PORT = parseInt(process.env.PORT ?? "3001");
 app.listen(PORT, () => {
   console.log(`[Worker] Servidor iniciado en puerto ${PORT}`);
   console.log(`[Worker] FFmpeg path: ${ffmpegStatic ?? "system"}`);
+  // Verificar variables de entorno al arrancar
+  const hasUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const hasKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+  console.log(`[Worker] NEXT_PUBLIC_SUPABASE_URL: ${hasUrl ? "✓ presente" : "✗ FALTA"}`);
+  console.log(`[Worker] SUPABASE_SERVICE_ROLE_KEY: ${hasKey ? "✓ presente" : "✗ FALTA"}`);
+  if (!hasUrl || !hasKey) {
+    console.error("[Worker] ⚠ Variables de entorno faltantes — el procesamiento fallará");
+  }
 });
