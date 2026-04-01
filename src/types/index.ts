@@ -26,6 +26,7 @@ export interface RecorderState {
   error: string | null;
   recordingId: string | null;
   downloadUrl: string | null;
+  guestBlob: Blob | null; // solo en modo invitado
 }
 
 export type RecordingQuality = "low" | "medium" | "high";
@@ -55,6 +56,10 @@ export interface RecorderOptions {
   quality?: RecordingQuality;
   // Temporizador: detener automáticamente a los N segundos (0 = sin límite)
   autoStopSeconds?: number;
+  // Modo invitado: sin subida, descarga directa, límite 2 minutos
+  guestMode?: boolean;
+  // Fuente de vídeo: pantalla, webcam, o ambas
+  videoSource?: "screen" | "webcam" | "both";
 }
 
 // Registro en la tabla `recordings` de PostgreSQL

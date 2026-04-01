@@ -47,19 +47,35 @@ export default function RecorderUI({ options }: RecorderUIProps) {
   const [autoStopSeconds, setAutoStopSeconds] = useState(0);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [audioOpts, setAudioOpts] = useState({ includeSystemAudio: true, includeMicrophone: false });
+  const [videoSource, setVideoSource] = useState<"screen" | "webcam" | "both">("screen");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const timerDisplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Detectar si hay sesión — RecorderLoader pasa isGuest como prop
+  const isGuest = (options as RecorderOptions & { isGuest?: boolean }).isGuest ?? false;
 
   const recOptions: RecorderOptions = {
     ...options,
     quality,
-    autoStopSeconds,
+    autoStopSeconds: isGuest ? 0 : autoStopSeconds, // guest usa límite interno de 2min
+    guestMode: isGuest,
+    videoSource,
     includeSystemAudio: audioOpts.includeSystemAudio,
     includeMicrophone: audioOpts.includeMicrophone,
   };
 
   const { state, startRecording, stopRecording, pauseRecording, resumeRecording, abortUpload, reset, screenStream } = useScreenRecorder(recOptions);
   const previewRef = useRef<HTMLVideoElement>(null);
+
+  const handleGuestDownload = () => {
+    if (!state.guestBlob) return;
+    const url = URL.createObjectURL(state.guestBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `grabacion-${new Date().toISOString().slice(0,19).replace(/[T:]/g, "-")}.webm`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     if (previewRef.current && screenStream.current && state.status === "recording") {
@@ -145,8 +161,14 @@ export default function RecorderUI({ options }: RecorderUIProps) {
         ) : isReady ? (
           <div className="preview-placeholder">
             <div className="ready-icon">✓</div>
-            <p className="ph-title">Grabación guardada</p>
-            <a href="/recordings" className="btn-link">Ver en mi biblioteca →</a>
+            <p className="ph-title">{isGuest ? "¡Grabación lista!" : "Grabación guardada"}</p>
+            {isGuest ? (
+              <p className="ph-note" style={{fontSize:".72rem",color:"var(--text-muted)"}}>
+                Duración: {String(Math.floor(state.durationSeconds/60)).padStart(2,"0")}:{String(state.durationSeconds%60).padStart(2,"0")} · WebM Format
+              </p>
+            ) : (
+              <a href="/recordings" className="btn-link">Ver en mi biblioteca →</a>
+            )}
           </div>
         ) : state.error ? (
           <div className="preview-placeholder">
@@ -186,11 +208,34 @@ export default function RecorderUI({ options }: RecorderUIProps) {
         {isPaused && <button className="btn-sec" onClick={resumeRecording}>▶ Reanudar</button>}
         {isUploading && state.status === "uploading" && <button className="btn-danger" onClick={abortUpload}>Cancelar</button>}
         {(state.error || isReady) && <button className="btn-sec" onClick={reset}>Nueva grabación</button>}
+        {isReady && isGuest && state.guestBlob && (
+          <>
+            <button className="btn-record start" onClick={handleGuestDownload}>
+              ↓ Descargar WebM
+            </button>
+          </>
+        )}
       </div>
 
       {/* OPCIONES */}
       {isIdle && (
         <div className="opts-panel">
+          <div className="opt-group">
+            <span className="opt-label">Fuente de vídeo</span>
+            <div className="source-grid">
+              {([
+                { value: "screen", icon: "🖥", label: "Pantalla" },
+                { value: "webcam", icon: "📷", label: "Webcam" },
+                { value: "both",   icon: "⊞",  label: "Ambas" },
+              ] as const).map(src => (
+                <button key={src.value} className={`src-btn ${videoSource === src.value ? "active" : ""}`} onClick={() => setVideoSource(src.value)}>
+                  <span className="src-icon">{src.icon}</span>
+                  <span className="src-label">{src.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="opt-group">
             <span className="opt-label">Calidad de grabación</span>
             <div className="quality-grid">
@@ -203,7 +248,7 @@ export default function RecorderUI({ options }: RecorderUIProps) {
             </div>
           </div>
 
-          <div className="opt-group">
+          {!isGuest && <div className="opt-group">
             <span className="opt-label">Parar automáticamente</span>
             <div className="timer-grid">
               {TIMER_OPTIONS.map(opt => (
@@ -212,7 +257,7 @@ export default function RecorderUI({ options }: RecorderUIProps) {
                 </button>
               ))}
             </div>
-          </div>
+          </div>}
 
           <button className="adv-toggle" onClick={() => setShowAdvanced(!showAdvanced)}>
             {showAdvanced ? "▲" : "▼"} Audio y cámara
@@ -285,6 +330,13 @@ export default function RecorderUI({ options }: RecorderUIProps) {
         .opt-group { display:flex; flex-direction:column; gap:.45rem; }
         .opt-label { font-size:.68rem; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--text-muted); }
 
+        .source-grid { display:flex; gap:.45rem; }
+        .src-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:.2rem; padding:.55rem .4rem; border-radius:8px; background:var(--surface2); border:1.5px solid var(--border2); cursor:pointer; transition:all .15s; }
+        .src-btn:hover { border-color:var(--accent-border); }
+        .src-btn.active { background:var(--accent-dim); border-color:var(--accent); }
+        .src-icon { font-size:1.1rem; line-height:1; }
+        .src-label { font-size:.72rem; font-weight:600; color:var(--text-secondary); }
+        .src-btn.active .src-label { color:var(--accent-bright); }
         .quality-grid { display:flex; gap:.45rem; }
         .q-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:.18rem; padding:.55rem .4rem; border-radius:8px; background:var(--surface2); border:1.5px solid var(--border2); cursor:pointer; transition:all .15s; }
         .q-btn:hover { border-color:var(--accent-border); }

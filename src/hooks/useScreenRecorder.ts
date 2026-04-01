@@ -28,6 +28,7 @@ const initialState: RecorderState = {
   error: null,
   recordingId: null,
   downloadUrl: null,
+  guestBlob: null,
 };
 
 export function useScreenRecorder(options: RecorderOptions = {}) {
@@ -40,6 +41,8 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
     includeCamera = false,
     quality = "medium",
     autoStopSeconds = 0,
+    guestMode = false,
+    videoSource = "screen",
   } = options;
 
   const [state, setState] = useState<RecorderState>(initialState);
@@ -93,23 +96,48 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
     try {
       updateState({ status: "requesting", error: null });
 
-      // 1. Capturar pantalla (con audio del sistema si está disponible)
-      const displayStream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          frameRate: { ideal: 30, max: 60 },
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-        },
-        audio: includeSystemAudio
-          ? {
-              echoCancellation: false,
-              noiseSuppression: false,
-              sampleRate: 44100,
-            }
-          : false,
-      });
+      // 1. Capturar la fuente de vídeo según videoSource
+      const tracks: MediaStreamTrack[] = [];
 
-      const tracks: MediaStreamTrack[] = [...displayStream.getTracks()];
+      if (videoSource === "screen" || videoSource === "both") {
+        const displayStream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            frameRate: { ideal: 30, max: 60 },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
+          audio: includeSystemAudio
+            ? { echoCancellation: false, noiseSuppression: false, sampleRate: 44100 }
+            : false,
+        });
+        displayStream.getTracks().forEach(t => tracks.push(t));
+
+        // Parar cuando el usuario cierre la ventana compartida
+        displayStream.getVideoTracks()[0]?.addEventListener("ended", () => {
+          if (mediaRecorderRef.current?.state === "recording" ||
+              mediaRecorderRef.current?.state === "paused") {
+            stopRecording();
+          }
+        });
+      }
+
+      if (videoSource === "webcam" || videoSource === "both") {
+        try {
+          const camStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              width: { ideal: videoSource === "webcam" ? 1280 : 320 },
+              height: { ideal: videoSource === "webcam" ? 720 : 240 },
+              frameRate: { ideal: 30 },
+            },
+            audio: videoSource === "webcam" ? { echoCancellation: true, noiseSuppression: true } : false,
+          });
+          camStream.getTracks().forEach(t => tracks.push(t));
+          cameraStreamRef.current = camStream;
+        } catch {
+          if (videoSource === "webcam") throw new Error("No se pudo acceder a la webcam");
+          console.warn("[Recorder] Webcam no disponible en modo both, continuando sin ella");
+        }
+      }
 
       // 2. Agregar micrófono si se solicita
       if (includeMicrophone) {
@@ -166,16 +194,6 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
         }
       };
 
-      // Cuando el usuario cierra la ventana/pestaña compartida
-      displayStream.getVideoTracks()[0].addEventListener("ended", () => {
-        if (
-          mediaRecorderRef.current?.state === "recording" ||
-          mediaRecorderRef.current?.state === "paused"
-        ) {
-          stopRecording();
-        }
-      });
-
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
       totalSizeBytesRef.current = 0;
@@ -186,11 +204,13 @@ export function useScreenRecorder(options: RecorderOptions = {}) {
       updateState({ status: "recording", recordingId: null });
 
       // 7b. Temporizador automático de parada
-      if (autoStopSeconds > 0) {
+      // En modo invitado: límite fijo de 2 minutos
+      const effectiveAutoStop = guestMode ? 120 : autoStopSeconds;
+      if (effectiveAutoStop > 0) {
         autoStopTimerRef.current = setTimeout(() => {
-          console.log(`[Recorder] Tiempo límite alcanzado (${autoStopSeconds}s), deteniendo...`);
+          console.log(`[Recorder] Tiempo límite alcanzado (${effectiveAutoStop}s), deteniendo...`);
           stopRecording();
-        }, autoStopSeconds * 1000);
+        }, effectiveAutoStop * 1000);
       }
 
       // 8. Timer para mostrar la duración en tiempo real
