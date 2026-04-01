@@ -209,29 +209,28 @@ async function processVideo(job: ProcessingJob): Promise<void> {
 
 // =============================================
 // FFmpeg: Conversión WebM → MP4
+// Optimizado para bajo consumo de RAM (Railway free tier: 512MB)
 // =============================================
 function convertToMp4(inputPath: string, outputPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
-      // Códec de vídeo: H.264 (máxima compatibilidad)
       .videoCodec("libx264")
-      // Preset: balance entre velocidad y calidad
-      // "fast" es ideal para el worker; "medium" da mejor compresión
       .outputOptions([
-        "-preset fast",
-        // CRF 23: calidad por defecto (menor = mejor calidad, mayor archivo)
-        "-crf 23",
-        // Optimizado para streaming web (moov atom al inicio)
+        // ultrafast usa mucho menos RAM que fast/medium
+        // a costa de archivos algo más grandes
+        "-preset ultrafast",
+        "-crf 28",
         "-movflags +faststart",
-        // Perfil H.264 compatible con todos los dispositivos
-        "-profile:v main",
-        "-level 4.0",
-        // Píxel format compatible con todos los reproductores
+        "-profile:v baseline",  // baseline usa menos memoria que main
+        "-level 3.1",
         "-pix_fmt yuv420p",
+        // Limitar threads para reducir uso de RAM
+        "-threads 1",
+        // Reducir resolución si es mayor a 1280x720 (menos RAM en decode)
+        "-vf scale='min(1280,iw)':'min(720,ih)':force_original_aspect_ratio=decrease",
       ])
-      // Códec de audio: AAC (mejor compatibilidad que opus en MP4)
       .audioCodec("aac")
-      .audioBitrate("128k")
+      .audioBitrate("96k")   // reducido de 128k
       .audioChannels(2)
       .format("mp4")
       .on("start", (cmd) => {
