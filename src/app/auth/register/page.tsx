@@ -1,4 +1,11 @@
 "use client";
+
+export const metadata = {
+  title: "Crear cuenta",
+  description: "Crea tu cuenta gratuita en Grabador Web y guarda tus grabaciones en la nube.",
+  alternates: { canonical: "/auth/register" },
+};
+
 // =============================================
 // src/app/auth/register/page.tsx
 // Registro con email + contraseña únicamente (sin OAuth)

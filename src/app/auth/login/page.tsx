@@ -1,4 +1,10 @@
 "use client";
+
+export const metadata = {
+  title: "Iniciar sesión",
+  robots: { index: false },
+};
+
 // =============================================
 // src/app/auth/login/page.tsx
 // Login con email + contraseña únicamente (sin OAuth)

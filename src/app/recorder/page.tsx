@@ -7,7 +7,19 @@ import Navbar from "@/components/Navbar";
 import RecorderLoader from "@/components/recorder/RecorderLoader";
 
 export const metadata: Metadata = {
-  title: "Grabador — GrabadorWeb",
+  title: "Grabador de pantalla online — GrabadorWeb",
+  description:
+    "Graba tu pantalla, ventana o pestaña directamente desde el navegador. " +
+    "Sin instalaciones. Elige calidad, temporizador y fuente de vídeo.",
+  openGraph: {
+    title: "Grabador de pantalla online — GrabadorWeb",
+    description: "Graba tu pantalla sin instalar nada. Descarga en WebM o guarda como MP4 en tu biblioteca.",
+    url: "https://grabador-web-v2.vercel.app/recorder",
+  },
+  twitter: {
+    card: "summary",
+    title: "Grabador de pantalla online — GrabadorWeb",
+  },
 };
 
 export default function RecorderPage() {

@@ -1,10 +1,16 @@
+"use client";
+
+export const metadata = {
+  title: "Mis grabaciones",
+  description: "Biblioteca de tus grabaciones de pantalla. Descarga en MP4 o WebM.",
+};
+
 // =============================================
 // src/app/recordings/page.tsx
 // Página de listado de grabaciones del usuario
 // Polling para actualizar el estado de las que están procesando
 // =============================================
 
-"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import type { Recording } from "@/types";
