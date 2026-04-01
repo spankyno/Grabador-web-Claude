@@ -1,21 +1,17 @@
 # =============================================
 # worker/Dockerfile
-# Imagen Docker para el worker de procesamiento de vídeo
-# Deploy en Railway, Fly.io, o Render
+# Railway usa worker/ como root directory, así que
+# todos los paths son relativos a esa carpeta.
 # =============================================
 
-# Usar imagen oficial de Node con FFmpeg preinstalado
-# node:20-slim + instalamos ffmpeg del sistema operativo
 FROM node:20-slim AS base
 
-# Instalar FFmpeg y dependencias del sistema
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     ca-certificates \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Verificar instalación de FFmpeg
 RUN ffmpeg -version | head -2
 
 # ===== Build stage =====
@@ -23,16 +19,14 @@ FROM base AS builder
 
 WORKDIR /app
 
-# Copiar package files primero (caché de Docker)
-COPY worker/package*.json ./
-COPY worker/tsconfig.json ./
+# package files primero para aprovechar caché de Docker
+COPY package*.json ./
+COPY tsconfig.json ./
 
 RUN npm ci
 
-# Copiar código fuente
-COPY worker/src ./src
-# Tipos compartidos con el frontend
-COPY src/types ./types
+# Código fuente — tipos ya incluidos en src/types.ts
+COPY src ./src
 
 # Compilar TypeScript
 RUN npm run build
@@ -42,22 +36,13 @@ FROM base AS production
 
 WORKDIR /app
 
-# Solo dependencias de producción
-COPY worker/package*.json ./
+COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Copiar el build compilado
 COPY --from=builder /app/dist ./dist
 
-# Puerto del servidor Express
 EXPOSE 3001
 
-# Variables de entorno requeridas (se configuran en Railway/Fly)
-# NEXT_PUBLIC_SUPABASE_URL
-# SUPABASE_SERVICE_ROLE_KEY
-# PORT (opcional, default 3001)
-
-# Healthcheck para Railway/Fly
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:3001/health || exit 1
 
