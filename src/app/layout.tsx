@@ -191,7 +191,7 @@ const jsonLd = {
       name: "Aitor Sánchez Gutiérrez",
       url: "https://aitorhub.vercel.app/",
       sameAs: [
-        "https://aitorblog.infinityfreeapp.com/",
+        "https://aitorsanchez.pages.dev/",
         "https://aitorhub.vercel.app/",
       ],
     },
